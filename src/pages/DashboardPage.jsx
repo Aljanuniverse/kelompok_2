@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
 import { AreaChart, Area, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts';
+import OnboardingTourModal from '../components/OnboardingTourModal';
 
 const SB = {
   'Baru': 'b-blue',
@@ -25,6 +26,14 @@ export default function DashboardPage() {
 
   const [activeTab, setActiveTab] = useState('all');
   const [selectedCategoryCard, setSelectedCategoryCard] = useState(1);
+  const [showTour, setShowTour] = useState(() => {
+    try {
+      const dismissed = localStorage.getItem(`helpdesk_tour_dismissed_${user?.id}`);
+      return !dismissed;
+    } catch {
+      return true;
+    }
+  });
 
   // Filter based on role
   const mine = user?.role === 'karyawan'
@@ -89,26 +98,48 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={() => navigate('/guide')}
-          style={{
-            background: 'var(--bg-card)',
-            border: '1.5px solid var(--border)',
-            borderRadius: 'var(--r-full)',
-            padding: '8px 18px',
-            fontSize: 12,
-            fontWeight: 700,
-            color: 'var(--blue)',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            boxShadow: 'var(--shadow-xs)'
-          }}
-        >
-          Buka Buku Panduan & SOP →
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => setShowTour(true)}
+            style={{
+              background: 'var(--blue)',
+              border: 'none',
+              borderRadius: 'var(--r-full)',
+              padding: '8px 18px',
+              fontSize: 12,
+              fontWeight: 700,
+              color: '#fff',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              boxShadow: '0 2px 8px rgba(37,99,235,0.35)'
+            }}
+          >
+            🎯 Mulai Tur Panduan Fitur
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/guide')}
+            style={{
+              background: 'var(--bg-card)',
+              border: '1.5px solid var(--border)',
+              borderRadius: 'var(--r-full)',
+              padding: '8px 18px',
+              fontSize: 12,
+              fontWeight: 700,
+              color: 'var(--text)',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              boxShadow: 'var(--shadow-xs)'
+            }}
+          >
+            Buku Panduan & SOP →
+          </button>
+        </div>
       </div>
 
       {/* ── TOP SECTION: 2 EQUAL CARDS (Matches Reference) ── */}
@@ -453,6 +484,9 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+
+      {/* ── ONBOARDING TOUR MODAL ── */}
+      <OnboardingTourModal isOpen={showTour} onClose={() => setShowTour(false)} />
 
     </div>
   );
